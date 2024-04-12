@@ -2,6 +2,7 @@ package br.com.fiap.tiulanches.core.entitie.pedido;
 
 import java.util.List;
 
+import br.com.fiap.tiulanches.adapter.repository.pedido.PedidoDto;
 import br.com.fiap.tiulanches.core.enums.StatusPedido;
 
 import java.util.ArrayList;
@@ -86,5 +87,10 @@ public class Pedido {
 	
 	public boolean isPermiteFinalizar() {
 		return this.status == StatusPedido.PRONTO;
-	}					
+	}
+	
+	public void cadastrar(PedidoDto pedido) {
+		this.idPedido = pedido.idPedido();
+		this.status = pedido.status();		
+	}	
 }

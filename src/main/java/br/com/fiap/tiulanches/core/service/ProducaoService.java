@@ -7,23 +7,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import br.com.fiap.tiulanches.adapter.controller.ProducaoController;
+import br.com.fiap.tiulanches.adapter.message.EventoEnum;
 import br.com.fiap.tiulanches.adapter.repository.painelpedido.PainelPedidoRepository;
 import br.com.fiap.tiulanches.adapter.repository.pedido.PedidoDto;
 import br.com.fiap.tiulanches.adapter.repository.pedido.PedidoRepository;
 import br.com.fiap.tiulanches.core.entitie.pedido.Pedido;
 import br.com.fiap.tiulanches.core.enums.StatusPedido;
 import br.com.fiap.tiulanches.core.exception.BusinessException;
+import br.com.fiap.tiulanches.infra.kafka.pedido.EnviaPedido;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ProducaoService implements ProducaoController {
 	private final PainelPedidoRepository painelPedidoRepository;
 	private final PedidoRepository pedidoRepository;	
+	private final EnviaPedido enviaPedido;
 	private static final String ENTIDADE = "Pedido";
 	
-	public ProducaoService(PedidoRepository pedidoRepository, PainelPedidoRepository painelPedidoRepository) {
+	public ProducaoService(PedidoRepository pedidoRepository, PainelPedidoRepository painelPedidoRepository,
+						   EnviaPedido enviaPedido) {
 		this.painelPedidoRepository = painelPedidoRepository;
 		this.pedidoRepository = pedidoRepository;		
+		this.enviaPedido = enviaPedido;
 	}
 	
 	public List<PedidoDto> consultaPainelPedido() {
@@ -41,22 +46,22 @@ public class ProducaoService implements ProducaoController {
 	}
 
 	public void cancelar(Long id){
-		Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
+		Pedido pedido = pedidoRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 		
 		if (pedido.isPermiteCancelar()) {
 			pedido.cancelar();
-			pedidoRepository.save(pedido);
+			salvaPedido(pedido);
 		} else {
 			throw new BusinessException("Pedido não pode ser cancelado!", HttpStatus.BAD_REQUEST, ENTIDADE);
 		}
 	}
 	
 	public void preparar(Long id){
-		Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
+		Pedido pedido = pedidoRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 		
 		if (pedido.isPermitePreparo()) {		
 			pedido.preparar();		
-			pedidoRepository.save(pedido);
+			salvaPedido(pedido);
 		} else {
 			throw new BusinessException("Pedido não pode ser preparado!", HttpStatus.BAD_REQUEST, ENTIDADE);
 		}
@@ -64,11 +69,11 @@ public class ProducaoService implements ProducaoController {
 	
 	@Override
 	public void entregar(Long id) {
-		Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
+		Pedido pedido = pedidoRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 		
 		if (pedido.isPermiteEntregar()) {		
 			pedido.entregar();		
-			pedidoRepository.save(pedido);
+			salvaPedido(pedido);
 		} else {
 			throw new BusinessException("Pedido não pode ser entregue!", HttpStatus.BAD_REQUEST, ENTIDADE);
 		}
@@ -76,13 +81,18 @@ public class ProducaoService implements ProducaoController {
 
 	@Override
 	public void finalizar(Long id) {
-		Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
+		Pedido pedido = pedidoRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 		
 		if (pedido.isPermiteFinalizar()) {		
 			pedido.finalizar();		
-			pedidoRepository.save(pedido);
+			salvaPedido(pedido);
 		} else {
 			throw new BusinessException("Pedido não pode ser finalizado!", HttpStatus.BAD_REQUEST, ENTIDADE);
 		}
 	}	
+
+	private void salvaPedido(Pedido pedido){
+		pedidoRepository.save(pedido);
+		enviaPedido.enviaStatusMensagem(EventoEnum.UPDATE, new PedidoDto(pedido));
+	}
 }
