@@ -8,27 +8,27 @@ import org.springframework.stereotype.Service;
 
 import br.com.fiap.tiulanches.adapter.controller.ProducaoController;
 import br.com.fiap.tiulanches.adapter.message.EventoEnum;
+import br.com.fiap.tiulanches.adapter.message.pedido.PedidoMessage;
 import br.com.fiap.tiulanches.adapter.repository.painelpedido.PainelPedidoRepository;
 import br.com.fiap.tiulanches.adapter.repository.pedido.PedidoDto;
 import br.com.fiap.tiulanches.adapter.repository.pedido.PedidoRepository;
 import br.com.fiap.tiulanches.core.entitie.pedido.Pedido;
 import br.com.fiap.tiulanches.core.enums.StatusPedido;
 import br.com.fiap.tiulanches.core.exception.BusinessException;
-import br.com.fiap.tiulanches.infra.kafka.pedido.EnviaPedido;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ProducaoService implements ProducaoController {
 	private final PainelPedidoRepository painelPedidoRepository;
 	private final PedidoRepository pedidoRepository;	
-	private final EnviaPedido enviaPedido;
+	private final PedidoMessage pedidoMessage;
 	private static final String ENTIDADE = "Pedido";
 	
 	public ProducaoService(PedidoRepository pedidoRepository, PainelPedidoRepository painelPedidoRepository,
-						   EnviaPedido enviaPedido) {
+						   PedidoMessage pedidoMessage) {
 		this.painelPedidoRepository = painelPedidoRepository;
 		this.pedidoRepository = pedidoRepository;		
-		this.enviaPedido = enviaPedido;
+		this.pedidoMessage = pedidoMessage;
 	}
 	
 	public List<PedidoDto> consultaPainelPedido() {
@@ -53,17 +53,6 @@ public class ProducaoService implements ProducaoController {
 			salvaPedido(pedido);
 		} else {
 			throw new BusinessException("Pedido não pode ser cancelado!", HttpStatus.BAD_REQUEST, ENTIDADE);
-		}
-	}
-	
-	public void preparar(Long id){
-		Pedido pedido = pedidoRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-		
-		if (pedido.isPermitePreparo()) {		
-			pedido.preparar();		
-			salvaPedido(pedido);
-		} else {
-			throw new BusinessException("Pedido não pode ser preparado!", HttpStatus.BAD_REQUEST, ENTIDADE);
 		}
 	}
 	
@@ -93,6 +82,6 @@ public class ProducaoService implements ProducaoController {
 
 	private void salvaPedido(Pedido pedido){
 		pedidoRepository.save(pedido);
-		enviaPedido.enviaStatusMensagem(EventoEnum.UPDATE, new PedidoDto(pedido));
+		pedidoMessage.enviaStatusMensagem(EventoEnum.UPDATE, new PedidoDto(pedido));
 	}
 }

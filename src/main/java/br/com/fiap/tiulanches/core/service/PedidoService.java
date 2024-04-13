@@ -11,6 +11,7 @@ import br.com.fiap.tiulanches.adapter.repository.pedido.PedidoDto;
 import br.com.fiap.tiulanches.adapter.repository.pedido.PedidoRepository;
 import br.com.fiap.tiulanches.core.entitie.pedido.ItemPedido;
 import br.com.fiap.tiulanches.core.entitie.pedido.Pedido;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class PedidoService implements PedidoController {
@@ -31,6 +32,13 @@ public class PedidoService implements PedidoController {
 			pedido.adicionarItem(itemPedido);
 		}		
 		
+		pedidoRepository.save(pedido);
+	}
+
+	public void preparar(Long id){
+		Pedido pedido = pedidoRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+		
+		pedido.preparar();		
 		pedidoRepository.save(pedido);
 	}
 }

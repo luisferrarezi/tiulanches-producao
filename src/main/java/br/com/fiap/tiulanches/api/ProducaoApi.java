@@ -62,23 +62,6 @@ public class ProducaoApi {
 		return ResponseEntity.noContent().build();
 	}
 	
-	@PutMapping(value = "/preparar/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@Operation(summary = "Inicia preparação do pedido", description = "Inicia preparação do pedido", tags = {"Pedido"})
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "204", description = "Sucesso, iniciada preparação do pedido", content=@Content(schema = @Schema(hidden = true))),
-			@ApiResponse(responseCode = "400", description = "Falha, pedido não está com status de recebido ou não foi pago", content=@Content(schema = @Schema(hidden = true))),
-			@ApiResponse(responseCode = "404", description = "Falha, pedido não encontrado", content=@Content(schema = @Schema(hidden = true)))
-	})			
-	public ResponseEntity<PedidoDto> preparar(@ParameterObject @PathVariable @NotNull
-			                                  @Schema(description = "Código do pedido no sistema", example = "1")
-			                                  Long id){
-		logger.info("Iniciar preparação do pedido pelo idPedido: {}", id);
-		
-		pedidoController.preparar(id);		
-		
-		return ResponseEntity.noContent().build();
-	}	
-	
 	@PutMapping(value = "/entregar/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "Entrega do pedido", description = "Entrega do pedido", tags = {"Pedido"})
 	@ApiResponses(value = {

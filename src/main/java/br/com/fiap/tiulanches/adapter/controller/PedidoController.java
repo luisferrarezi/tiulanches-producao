@@ -4,4 +4,5 @@ import br.com.fiap.tiulanches.adapter.repository.pedido.PedidoDto;
 
 public interface PedidoController {	
 	public void cadastrar(PedidoDto dto);
+	public void preparar(Long id);
 }
