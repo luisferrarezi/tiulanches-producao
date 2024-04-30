@@ -1,4 +1,4 @@
-package br.com.fiap.tiulanches.core.entitie.produto;
+package br.com.fiap.tiulanches.core.entity.produto;
 
 import br.com.fiap.tiulanches.adapter.repository.produto.ProdutoDto;
 import br.com.fiap.tiulanches.core.enums.Categoria;

@@ -12,7 +12,7 @@ import br.com.fiap.tiulanches.adapter.message.pedido.PedidoMessage;
 import br.com.fiap.tiulanches.adapter.repository.painelpedido.PainelPedidoRepository;
 import br.com.fiap.tiulanches.adapter.repository.pedido.PedidoDto;
 import br.com.fiap.tiulanches.adapter.repository.pedido.PedidoRepository;
-import br.com.fiap.tiulanches.core.entitie.pedido.Pedido;
+import br.com.fiap.tiulanches.core.entity.pedido.Pedido;
 import br.com.fiap.tiulanches.core.enums.StatusPedido;
 import br.com.fiap.tiulanches.core.exception.BusinessException;
 import jakarta.persistence.EntityNotFoundException;
