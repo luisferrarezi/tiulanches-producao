@@ -30,7 +30,7 @@ public class ProducaoApi {
 	
 	public ProducaoApi(ProducaoController pedidoController){
 		this.pedidoController = pedidoController;		
-	};
+	}
 	
 	private static Logger logger = LoggerFactory.getLogger(ProducaoApi.class);
 

@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.fiap.tiulanches.adapter.controller.PedidoController;
 import br.com.fiap.tiulanches.adapter.repository.pedido.PedidoDto;
 import br.com.fiap.tiulanches.adapter.repository.pedido.PedidoRepository;
-import br.com.fiap.tiulanches.core.entitie.pedido.ItemPedido;
-import br.com.fiap.tiulanches.core.entitie.pedido.Pedido;
+import br.com.fiap.tiulanches.core.entity.pedido.ItemPedido;
+import br.com.fiap.tiulanches.core.entity.pedido.Pedido;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service

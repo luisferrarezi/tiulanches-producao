@@ -3,7 +3,7 @@ package br.com.fiap.tiulanches.adapter.repository.pedido;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import br.com.fiap.tiulanches.core.entitie.pedido.Pedido;
+import br.com.fiap.tiulanches.core.entity.pedido.Pedido;
 import br.com.fiap.tiulanches.core.enums.StatusPedido;
 import io.swagger.v3.oas.annotations.media.Schema;
 
