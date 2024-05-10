@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-deployment
+  name: tlproducao-deployment
   labels:
-    app: app-deployment
+    app: tlproducao-deployment
 spec:
   selector:
     matchLabels:
-      app: app
+      app: tlproducao
   replicas: 1
   template:
     metadata:
       labels:
-        app: app
+        app: tlproducao
     spec:
       containers:
-        - name: tiulanches
-          image: tiulanchesacr.azurecr.io/tiulanches:latest  
+        - name: tlproducao
+          image: tiulanchesacr.azurecr.io/tlproducao:latest  
           resources:
             requests:
               memory: "512Mi"
@@ -25,40 +25,40 @@ spec:
               memory: "1024Mi"
               cpu: "1.0"                  
           ports:
-            - containerPort: 8080
-              name: app-port
+            - containerPort: 8082
+              name: tlproducao-port
           env:
             - name: DATASOURCE_URL   
               valueFrom :
                 configMapKeyRef:
-                  name: app-config
+                  name: tlproducao-config
                   key: ds_url
             - name: DATASOURCE_PASSWORD  
               valueFrom:
                 configMapKeyRef:
-                  name: app-config
+                  name: tlproducao-config
                   key: ds_pass
             - name: DATASOURCE_USERNAME
               valueFrom:
                 configMapKeyRef:
-                  name: app-config
+                  name: tlproducao-config
                   key: ds_username
-            - name: ACCESS_TOKEN_MP
-              valueFrom:
-                configMapKeyRef:
-                  name: app-config
-                  key: mp_token
+            - name: CONEXAO_KAFKA
+              valueFrom :
+                configMapKeyRef :
+                  name : tlproducao-config
+                  key : conexao_kafka                  
           readinessProbe:
             httpGet:
               path: /actuator/health
-              port: app-port
+              port: tlproducao-port
             initialDelaySeconds: 60
             periodSeconds: 10
             failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /actuator/health
-              port: app-port
+              port: tlproducao-port
             initialDelaySeconds: 60
             periodSeconds: 10
             failureThreshold: 3
@@ -66,11 +66,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: app-svc
+  name: tlproducao-svc
 spec:
   selector:
-    app: app
+    app: tlproducao
   ports:
-    - port: 8080
-      targetPort: 8080
+    - port: 8082
+      targetPort: 8082
   type: LoadBalancer
