@@ -47,21 +47,7 @@ spec:
               valueFrom :
                 configMapKeyRef :
                   name : tlproducao-config
-                  key : conexao_kafka                  
-          readinessProbe:
-            httpGet:
-              path: /actuator/health
-              port: tlproducao-port
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            failureThreshold: 3
-          livenessProbe:
-            httpGet:
-              path: /actuator/health
-              port: tlproducao-port
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            failureThreshold: 3
+                  key : conexao_kafka
 ---
 apiVersion: v1
 kind: Service
@@ -71,6 +57,24 @@ spec:
   selector:
     app: tlproducao
   ports:
-    - port: 8082
-      targetPort: 8082
-  type: LoadBalancer
+  - port: 82
+    targetPort: 8082
+    protocol: TCP
+    name: http
+---    
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tlproducao-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: /producao
+        backend:
+          service:
+            name: tlproducao-svc
+            port: 
+              number: 82
