@@ -20,16 +20,10 @@ public class PedidoKafka implements PedidoListener {
 	}
     
     @Override    
-    @KafkaListener(topics = { "topico-pedido-producao", "topico-pagamento-pedido" }, groupId = "grupo-producao")
+    @KafkaListener(topics = { "topico-pedido-producao" }, groupId = "grupo-producao")
     public void processaMensagem(PedidoEvent pedidoEvent, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
-        if (topic.equalsIgnoreCase("topico-pedido-producao") && 
-            (pedidoEvent.getEvento() == EventoEnum.CREATE)){
+        if (pedidoEvent.getEvento() == EventoEnum.CREATE){
             pedidoController.cadastrar(pedidoEvent.getPedidoDto());
-
-        } else 
-        if (topic.equalsIgnoreCase("topico-pagamento-pedido") && 
-            (pedidoEvent.getEvento() == EventoEnum.UPDATE)){
-            pedidoController.preparar(pedidoEvent.getPedidoDto().idPedido());
-        }
+        } 
     }   
 }
